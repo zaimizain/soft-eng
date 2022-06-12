@@ -1,0 +1,2926 @@
+package pensionCalc;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
+import org.junit.jupiter.api.Test;
+
+import sem12122.sse3305.service.PensionServiceIMP;
+
+class PensionServiceIMPTest {
+
+	// TC for EP
+	@Test
+	void testcase1() { // TC1: Age = 40 Service= 132 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1962");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2002");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+		}
+	}
+
+	@Test
+	void testcase2() { // TC1: Age = 60 Service= 108 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1940");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2000");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase3() { // TC1: Age = 30 Service= 144 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1973");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2003");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase4() { // TC1: Age = 25 Service= 96 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1974");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("1999");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase5() { // TC5 = start kerja = 18/7/1965 & Gender = 'F' & Special = 'Y'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1970");// tahunlahir
+		test.add("18");
+		test.add("7");
+		test.add("1965");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("P");// jantina
+		test.add("Y");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+
+		}
+		assertEquals(umurbayarpencen, 45);
+		System.out.println("45 = " + umurbayarpencen);
+	}
+
+	@Test
+	void testcase6() { // TC5 = start kerja = 25/7/1967 & Gender = 'F' & Special = 'N'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1970");// tahunlahir
+		test.add("25");
+		test.add("7");
+		test.add("1967");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("P");// jantina
+		test.add("N");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+
+		}
+		assertEquals(umurbayarpencen, 45);
+		System.out.println("45 = " + umurbayarpencen);
+	}
+
+	@Test
+	void testcase7() { // TC5 = start kerja = 5/9/1964 & Gender = 'L' & Special = 'Y'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1970");// tahunlahir
+		test.add("5");
+		test.add("9");
+		test.add("1964");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("L");// jantina
+		test.add("Y");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+
+		}
+		assertEquals(umurbayarpencen, 45);
+		System.out.println("45 = " + umurbayarpencen);
+	}
+
+	@Test
+	void testcase8() { // TC5 = start kerja = 10/5/1961 & Gender = 'P' & Special = 'N'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1945");// tahunlahir
+		test.add("10");
+		test.add("5");
+		test.add("1961");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("L");// jantina
+		test.add("N");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+
+			umurbayarpencen = 55;
+		}
+		System.out.println("50 = " + umurbayarpencen);
+		assertEquals(50, umurbayarpencen);
+
+	}
+
+	@Test
+	void testcase9() { // TC5 = start kerja = 18/7/2001 & Gender = 'P' & Special = 'Y'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1945");// tahunlahir
+		test.add("18");
+		test.add("7");
+		test.add("2001");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("P");// jantina
+		test.add("Y");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 = " + umurbayarpencen);
+		assertEquals(55, umurbayarpencen);
+
+	}
+
+	@Test
+	void testcase10() { // TC5 = start kerja = 9/7/2005 & Gender = 'P' & Special = 'N'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1945");// tahunlahir
+		test.add("9");
+		test.add("7");
+		test.add("2005");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("P");// jantina
+		test.add("N");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 = " + umurbayarpencen);
+		assertEquals(55, umurbayarpencen);
+
+	}
+
+	@Test
+	void testcase11() { // TC5 = start kerja = 2/11/1998 & Gender = 'L' & Special = 'Y'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1945");// tahunlahir
+		test.add("2");
+		test.add("11");
+		test.add("1998");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("L");// jantina
+		test.add("Y");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 = " + umurbayarpencen);
+		assertEquals(55, umurbayarpencen);
+
+	}
+
+	@Test
+	void testcase12() { // TC5 = start kerja = 11/9/1997 & Gender = 'L' & Special = 'N'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1945");// tahunlahir
+		test.add("11");
+		test.add("9");
+		test.add("1997");// tahunkerja
+		test.add("3000");// gaji
+		test.add("1500");// allowance
+		test.add("120");// gajicuti
+		test.add("0");// cutihari
+		test.add("0");// cutibulan
+		test.add("0");// cutitahun
+		test.add("1");// harisara
+		test.add("2");// bulansara
+		test.add("1995");// tahunsara
+		test.add("L");// jantina
+		test.add("N");// istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));// tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));// bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));// tahun start khidmat
+		String dateKerja = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date dateKerja1 = null;
+		try {
+			dateKerja1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(dateKerja);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (dateKerja1.before(tarapril)
+				&& ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (dateKerja1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 = " + umurbayarpencen);
+		assertEquals(55, umurbayarpencen);
+
+	}
+
+	@Test
+	void testcase13a() { // TC13a: Age = 39 Service= 119 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1962");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("3");// bulansara 13
+		test.add("2000");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13b() { // TC13b: Age = 39 Service= 120 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1962");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13c() { // TC13c: Age = 39 Service= 121 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1962");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("5");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13d() { // TC13d: Age = 40 Service= 119 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1961");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("3");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13e() { // TC13e: Age = 40 Service= 120 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1961");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13f() { // TC13f: Age = 40 Service= 121 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1961");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("5");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13g() { // TC13g: Age = 41 Service= 119 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1960");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("3");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13h() { // TC13h: Age = 41 Service= 120 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1960");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase13i() { // TC13h: Age = 41 Service= 121 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1960");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("5");// bulansara 13
+		test.add("2001");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase14() { // TC13h: Age = 60 Service= 132 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1942");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2002");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase15() { // TC15: Age = 25 Service= 108 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1975");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2000");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase16() { // TC16: Age = 35 Service= 144 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1968");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2003");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase17() { // TC17: Age = 50 Service= 132 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1952");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("2002");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+
+	@Test
+	void testcase18() { // TC18: Age = 25 Service= 96 -output(2)
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");// 0
+		test.add("1");// 1
+		test.add("1974");// tahunlahir 2
+		test.add("11"); // 3
+		test.add("4"); // 4
+		test.add("1991");// tahunkerja 5
+		test.add("3000");// gaji akhir dikeluarkan 6
+		test.add("1500");// fix allowance 7
+		test.add("120");// gajicuti maximum 150 days 8
+		test.add("0");// cutihari 9
+		test.add("0");// cutibulan 10
+		test.add("0");// cutitahun 11
+		test.add("11");// harisara 12
+		test.add("4");// bulansara 13
+		test.add("1999");// tahunsara 14
+		test.add("L");// jantina 15
+		test.add("N");// istimewa 16
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+
+		// calculate month service
+		double actPension, actGratuity, actCash;
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));
+
+		double gajiakhir = Double.parseDouble(test.get(6));
+		double imbuhantetap = Double.parseDouble(test.get(7));
+		double gantiancuti = Double.parseDouble(test.get(8));
+
+		int cuti_bulan = Integer.parseInt(test.get(10));
+		int cuti_tahun = Integer.parseInt(test.get(11));
+
+		int tpencen_hari = Integer.parseInt(test.get(12));
+		int tpencen_bulan = Integer.parseInt(test.get(13));
+		int tpencen_tahun = Integer.parseInt(test.get(14));
+
+		int bulan_cuti_tg = (cuti_tahun * 12) + cuti_bulan;
+		minusbulan = 0;
+		minustahun = 0;
+		plusbulan = 0;
+
+		if (tpencen_hari < tmkhidmat_hari)
+			minusbulan = 1;
+		if ((tpencen_bulan - minusbulan) < tmkhidmat_bulan) {
+			minustahun = 1;
+			plusbulan = 12;
+		}
+
+		int tbk = tpencen_bulan - minusbulan + plusbulan - tmkhidmat_bulan;
+		int ttk = tpencen_tahun - minustahun - tmkhidmat_tahun;
+
+		int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+
+		double expPension = Math.round((1.00 / 600.00) * bulankira * gajiakhir);
+		double expGratuity = Math.round(0.075 * bulankira * gajiakhir);
+		double expCash = Math.round((1.00 / 30.00) * gantiancuti * (gajiakhir + imbuhantetap));
+
+		if (tiadaganjaran.equals("1") || tiadaganjaran.equals("2")) {
+			actPension = 0;
+			actGratuity = 0;
+			actCash = 0;
+			assertEquals(0, actPension);
+			assertEquals(0, actGratuity);
+			assertEquals(0, actCash);
+			System.out.println("Not Eligible");
+			System.out.println("\n");
+
+		} else {
+			actPension = Double.parseDouble(output.get(4));
+			actGratuity = Double.parseDouble(output.get(5));
+			actCash = Double.parseDouble(output.get(6));
+			assertEquals(expPension, actPension);
+			assertEquals(expGratuity, actGratuity);
+			assertEquals(expCash, actCash);
+			System.out.println("Eligible");
+			System.out.println(expPension + " = " + actPension);
+			System.out.println(expGratuity + " = " + actGratuity);
+			System.out.println(expCash + " = " + actCash);
+			System.out.println("\n");
+		}
+	}
+	//Finish BBT
+	//Start WBT
+	@Test
+	void testcase01() { //TC1 = Hari Lahir = 7.9.1967 & Retirement date = 1.5.2022
+		ArrayList<String> test = new ArrayList<>();
+		test.add("7");
+		test.add("9");
+		test.add("1967");//tahunlahir
+		test.add("1");
+		test.add("10");
+		test.add("1992");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("5");//bulansara
+		test.add("2022");//tahunsara
+		test.add("L");//jantina
+		test.add("N");//istimewa
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		minustahun = 0;
+		if (Integer.parseInt(test.get(12)) < Integer.parseInt(test.get(0)))
+			minusbulan = 1;
+		if ((Integer.parseInt(test.get(13)) - minusbulan) < Integer.parseInt(test.get(1))) {
+			plusbulan = 12;
+			minustahun = 1;
+		}
+		int umursara_bulan = Integer.parseInt(test.get(13)) - minusbulan + plusbulan - Integer.parseInt(test.get(1));
+		int umursara_tahun = Integer.parseInt(test.get(14)) - minustahun - Integer.parseInt(test.get(2));
+	
+		System.out.println("7 =" + umursara_bulan);
+		System.out.println("54 =" + umursara_tahun);
+		assertEquals(umursara_bulan,7);
+		assertEquals(umursara_tahun,54);
+		
+	}
+	@Test
+	void testcase02() { //TC2 = Hari Lahir = 1.5.1967 & Retirement date = 1.7.2022
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("5");
+		test.add("1967");//tahunlahir
+		test.add("1");
+		test.add("10");
+		test.add("1992");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("7");//harisara
+		test.add("9");//bulansara
+		test.add("2022");//tahunsara
+		test.add("L");//jantina
+		test.add("N");//istimewa
+		int minusbulan = 0;
+		int minustahun;
+		int plusbulan = 0;
+
+		minustahun = 0;
+		if (Integer.parseInt(test.get(12)) < Integer.parseInt(test.get(0)))
+			minusbulan = 1;
+		if ((Integer.parseInt(test.get(13)) - minusbulan) < Integer.parseInt(test.get(1))) {
+			plusbulan = 12;
+			minustahun = 1;
+		}
+		int umursara_bulan = Integer.parseInt(test.get(13)) - minusbulan + plusbulan - Integer.parseInt(test.get(1));
+		int umursara_tahun = Integer.parseInt(test.get(14)) - minustahun - Integer.parseInt(test.get(2));
+	
+		System.out.println("4 =" + umursara_bulan);
+		System.out.println("55 =" + umursara_tahun);
+		assertEquals(umursara_bulan,4);
+		assertEquals(umursara_tahun,55);
+		
+	}
+	
+	
+	@Test
+	void testcase03() { //TC3 = start kerja= 1/3/1991 & Gender = 'L' & istimewa = 'Y' //TC3/TC6/TC9/TC12
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("3");
+		test.add("1971");//tahunlahir
+		test.add("1");
+		test.add("3");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("2");//bulansara
+		test.add("1995");//tahunsara
+		test.add("L");//jantina
+		test.add("Y");//istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));//tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));//bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));//tahun start khidmat
+		String mkstr = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date mkstr1 = null;
+		try {
+			mkstr1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(mkstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";//patutnya Apr 1, 1991
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (mkstr1.before(tarapril) && ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (mkstr1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("45 =" + umurbayarpencen);
+	assertEquals(umurbayarpencen,45);
+	
+	}
+	@Test
+	void testcase04() { //TC4 = start kerja= 1/3/1991 & Gender = 'L' & istimewa = 'N' //TC4/TC14
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("3");
+		test.add("1971");//tahunlahir
+		test.add("1");
+		test.add("3");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("2");//bulansara
+		test.add("1995");//tahunsara
+		test.add("L");//jantina
+		test.add("N");//istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));//tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));//bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));//tahun start khidmat
+		String mkstr = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date mkstr1 = null;
+		try {
+			mkstr1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(mkstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";//patutnya Apr 1, 1991
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (mkstr1.before(tarapril) && ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (mkstr1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("50 =" + umurbayarpencen);
+	assertEquals(umurbayarpencen,50);
+	
+	}
+	@Test
+	void testcase05() { //TC5 = start kerja= 1/5/1991 & Gender = 'L' & istimewa = 'N' //TC5/TC7/TC10/TC13
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("3");
+		test.add("1971");//tahunlahir
+		test.add("1");
+		test.add("5");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("2");//bulansara
+		test.add("1995");//tahunsara
+		test.add("L");//jantina
+		test.add("N");//istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));//tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));//bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));//tahun start khidmat
+		String mkstr = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date mkstr1 = null;
+		try {
+			mkstr1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(mkstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";//patutnya Apr 1, 1991
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (mkstr1.before(tarapril) && ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (mkstr1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 =" + umurbayarpencen);
+	assertEquals(umurbayarpencen,55);
+	
+	}
+	@Test
+	void testcase015() { //TC15 = start kerja= 1/5/1991 & Gender = 'L' & istimewa = 'Y'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("3");
+		test.add("1971");//tahunlahir
+		test.add("1");
+		test.add("5");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("2");//bulansara
+		test.add("1995");//tahunsara
+		test.add("L");//jantina
+		test.add("Y");//istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));//tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));//bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));//tahun start khidmat
+		String mkstr = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date mkstr1 = null;
+		try {
+			mkstr1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(mkstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";//patutnya Apr 1, 1991
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (mkstr1.before(tarapril) && ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (mkstr1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 =" + umurbayarpencen);
+	assertEquals(umurbayarpencen,55);
+	
+	}
+	@Test
+	void testcase08() { //TC8 = start kerja= 1/3/1991 & Gender = 'P' & istimewa = 'Dont care' //TC8/TC11/TC16
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("3");
+		test.add("1971");//tahunlahir
+		test.add("1");
+		test.add("3");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("2");//bulansara
+		test.add("1995");//tahunsara
+		test.add("P");//jantina
+		test.add("Y");//istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));//tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));//bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));//tahun start khidmat
+		String mkstr = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date mkstr1 = null;
+		try {
+			mkstr1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(mkstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";//patutnya Apr 1, 1991
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (mkstr1.before(tarapril) && ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (mkstr1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("45 =" + umurbayarpencen);
+	assertEquals(umurbayarpencen,45);
+	
+	}
+	@Test
+	void testcase017() { //TC17 = start kerja= 1/5/1991 & Gender = 'P' & istimewa = 'dont care'
+		String[] montharray = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+				"Nov", "Dec" };
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("3");
+		test.add("1971");//tahunlahir
+		test.add("1");
+		test.add("5");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("2");//bulansara
+		test.add("1995");//tahunsara
+		test.add("P");//jantina
+		test.add("Y");//istimewa
+		int tmkhidmat_hari = Integer.parseInt(test.get(3));//tarikh hari start khidmat
+		int tmkhidmat_bulan = Integer.parseInt(test.get(4));//bulan start khidmat
+		int tmkhidmat_tahun = Integer.parseInt(test.get(5));//tahun start khidmat
+		String mkstr = montharray[tmkhidmat_bulan - 1] + " " + tmkhidmat_hari + ", " + tmkhidmat_tahun;
+		Date mkstr1 = null;
+		try {
+			mkstr1 = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(mkstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sDate1 = "Apr 12, 1991";//patutnya Apr 1, 1991
+		Date tarapril = null;
+		try {
+			tarapril = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(sDate1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int umurbayarpencen = 0;
+		if (mkstr1.before(tarapril) && ((test.get(15).equals("L") && test.get(16).equals("Y")) || test.get(15).equals("P"))) {
+			umurbayarpencen = 45;
+		} else {
+			if (mkstr1.before(tarapril)) {
+				umurbayarpencen = 50;
+			} else {
+			}
+			umurbayarpencen = 55;
+		}
+		System.out.println("55 =" + umurbayarpencen);
+	assertEquals(umurbayarpencen,55);
+	
+	}
+
+	//Finish Umur Bayar Pencen
+	@Test
+	void testcase018() { //TC=18 Retirementdate = 1/5/2034 StartKerja = 7/9/1991 -511 //TC18/TC19
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1970");//tahunlahir
+		test.add("7");//harikerja
+		test.add("9");//bulankerja
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("5");//bulansara
+		test.add("2034");//tahunsara
+		test.add("L");//jantina
+		test.add("N");//istimewa
+		// ************* calculate month working
+				int minusbulan = 0;
+				int minustahun = 0;
+				int plusbulan = 0;
+				int bulan_cuti_tg = (Integer.parseInt(test.get(11)) * 12) + Integer.parseInt(test.get(10));
+
+				if (Integer.parseInt(test.get(12)) < Integer.parseInt(test.get(3)))
+					minusbulan = 1;
+				if ((Integer.parseInt(test.get(13)) - minusbulan) < Integer.parseInt(test.get(4))) {
+					minustahun = 1;
+					plusbulan = 12;
+				}
+
+				int tbk = Integer.parseInt(test.get(13)) - minusbulan + plusbulan - Integer.parseInt(test.get(4));
+				int ttk = Integer.parseInt(test.get(14)) - minustahun - Integer.parseInt(test.get(5));
+
+				int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+				System.out.println("511 =" + bulankira);
+				assertEquals(bulankira,511);
+	}
+	@Test
+	void testcase020() { //TC=20 Retirementdate = 7/9/2034 StartKerja = 1/5/1991 -520
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1970");//tahunlahir
+		test.add("1");//harikerja
+		test.add("5");//bulankerja
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("7");//harisara
+		test.add("9");//bulansara
+		test.add("2034");//tahunsara
+		test.add("L");//jantina
+		test.add("N");//istimewa
+		// ************* calculate month working
+				int minusbulan = 0;
+				int minustahun = 0;
+				int plusbulan = 0;
+				int bulan_cuti_tg = (Integer.parseInt(test.get(11)) * 12) + Integer.parseInt(test.get(10));
+
+				if (Integer.parseInt(test.get(12)) < Integer.parseInt(test.get(3)))
+					minusbulan = 1;
+				if ((Integer.parseInt(test.get(13)) - minusbulan) < Integer.parseInt(test.get(4))) {
+					minustahun = 1;
+					plusbulan = 12;
+				}
+
+				int tbk = Integer.parseInt(test.get(13)) - minusbulan + plusbulan - Integer.parseInt(test.get(4));
+				int ttk = Integer.parseInt(test.get(14)) - minustahun - Integer.parseInt(test.get(5));
+
+				int bulankira = ((ttk * 12) + tbk) - bulan_cuti_tg;
+				System.out.println("520 =" + bulankira);
+				assertEquals(bulankira,520);
+	}
+	//Finish Bulan Kira
+	@Test
+	void testcase021() { //TC21 : retirement age =39 & bulankira =120  
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("12");
+		test.add("1962");//tahunlahir
+		test.add("1");
+		test.add("7");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("7");//bulansara
+		test.add("2001");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+		System.out.println("1=" + tiadaganjaran);
+		assertEquals(tiadaganjaran,"1");
+	}
+	@Test
+	void testcase022() { //TC22 : retirement age =41 & bulankira =119 //TC22/TC23/TC25/TC27
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("12");
+		test.add("1960");//tahunlahir
+		test.add("1");
+		test.add("7");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("6");//bulansara
+		test.add("2001");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+		System.out.println("2=" + tiadaganjaran);
+		assertEquals(tiadaganjaran,"2");
+	}
+	@Test
+	void testcase024() { //TC24: retirement age =39 & bulankira =121 //TC24/TC26/TC28
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("12");
+		test.add("1962");//tahunlahir
+		test.add("1");
+		test.add("7");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("8");//bulansara
+		test.add("2001");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+		System.out.println("1=" + tiadaganjaran);
+		assertEquals(tiadaganjaran,"1");
+	}
+	@Test
+	void testcase029() { //TC29: retirement age =41 & bulankira =121 
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("8");
+		test.add("1960");//tahunlahir
+		test.add("1");
+		test.add("7");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("8");//bulansara
+		test.add("2001");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+		System.out.println("0=" + tiadaganjaran);
+		assertEquals(tiadaganjaran,"0");
+	}
+	@Test
+	void testcase030() { //TC30: retirement age =39 & bulankira =119 
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("1");
+		test.add("1962");//tahunlahir
+		test.add("1");
+		test.add("7");
+		test.add("1991");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("6");//bulansara
+		test.add("2001");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		String tiadaganjaran = output.get(2);
+		System.out.println("1=" + tiadaganjaran);
+		assertEquals(tiadaganjaran,"1");
+	}
+	//Finish Tiada Ganjaran
+
+	@Test
+	void testcase031() { //TC31:reckonabe POS = 480, Pension-2400  //TC31/TC33
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("12");
+		test.add("1975");//tahunlahir
+		test.add("1");
+		test.add("4");
+		test.add("1995");//tahunkerja
+		test.add("4000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("4");//bulansara
+		test.add("2035");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		double PencenMinima;
+		double bulankira = Integer.parseInt(output.get(3));
+		if (bulankira > 360)
+			bulankira = 360;
+		
+		double jumpenc = (1.00 / 600.00) * bulankira * Double.parseDouble(test.get(6));
+		PencenMinima = jumpenc;
+
+		if (PencenMinima < 720)
+			PencenMinima = 720;
+		if (bulankira < 300)
+			PencenMinima = jumpenc;
+		System.out.println("1800 = " + Math.round(PencenMinima));
+		assertEquals(Math.round(PencenMinima),1800);
+
+	}
+	@Test
+	void testcase032() { //TC32: reckonabe POS = 120, Pension-600 //TC32/TC34
+		PensionServiceIMP pc = new PensionServiceIMP();
+		ArrayList<String> test = new ArrayList<>();
+		test.add("1");
+		test.add("12");
+		test.add("1975");//tahunlahir
+		test.add("1");
+		test.add("4");
+		test.add("1995");//tahunkerja
+		test.add("3000");//gaji
+		test.add("110");//allowance
+		test.add("120");//gajicuti
+		test.add("0");//cutihari
+		test.add("0");//cutibulan
+		test.add("0");//cutitahun
+		test.add("1");//harisara
+		test.add("4");//bulansara
+		test.add("2005");//tahunsara
+		test.add("P");//jantina
+		test.add("N");//istimewa
+		ArrayList<String> output = pc.kirapencen(test);
+		double PencenMinima;
+		double bulankira = Integer.parseInt(output.get(3));
+		if (bulankira > 360)
+			bulankira = 360;
+		
+		double jumpenc = (1.00 / 600.00) * bulankira * Double.parseDouble(test.get(6));
+		PencenMinima = jumpenc;
+
+		if (PencenMinima < 720)
+			PencenMinima = 720;
+		if (bulankira < 300)
+			PencenMinima = jumpenc;
+		System.out.println("600 = " + Math.round(PencenMinima));
+		assertEquals(Math.round(PencenMinima),600);
+
+	}
+	//Finish Min Pencen
+	// KiraLieuOfLeave
+		@Test
+		void testcase035() { //TC35: Lieu of Leave = 180, Cash Award =2400
+			PensionServiceIMP pc = new PensionServiceIMP();
+			ArrayList<String> test = new ArrayList<>();
+			test.add("1");
+			test.add("12");
+			test.add("1965");// tahunlahir
+			test.add("1");
+			test.add("7");
+			test.add("2000");// tahunkerja
+			test.add("3300");// gaji
+			test.add("1500");// allowance
+			test.add("180");// gajicuti
+			test.add("0");// cutihari
+			test.add("0");// cutibulan
+			test.add("0");// cutitahun
+			test.add("1");// harisara
+			test.add("8");// bulansara
+			test.add("2010");// tahunsara
+			test.add("P");// jantina
+			test.add("N");// istimewa
+			ArrayList<String> output = pc.kirapencen(test);
+			Double jumganjarancr = Double.parseDouble(output.get(6));
+			System.out.println("24000 = " + jumganjarancr);
+			assertEquals(jumganjarancr, 24000.00);
+		}
+		@Test
+		void testcase036() { //TC36: Lieu of Leave = 100, Cash Award =
+			PensionServiceIMP pc = new PensionServiceIMP();
+			ArrayList<String> test = new ArrayList<>();
+			test.add("1");
+			test.add("12");
+			test.add("1965");// tahunlahir
+			test.add("1");
+			test.add("7");
+			test.add("2000");// tahunkerja
+			test.add("3200");// gaji
+			test.add("1500");// allowance
+			test.add("100");// gajicuti
+			test.add("0");// cutihari
+			test.add("0");// cutibulan
+			test.add("0");// cutitahun
+			test.add("1");// harisara
+			test.add("8");// bulansara
+			test.add("2010");// tahunsara
+			test.add("P");// jantina
+			test.add("N");// istimewa
+			ArrayList<String> output = pc.kirapencen(test);
+			Double jumganjarancr = Double.parseDouble(output.get(6));
+			System.out.println("15667 = " + jumganjarancr);
+			assertEquals(jumganjarancr, 15667.00);
+		}
+//Finish Lieu Of Leave
+		// KiraPensionYear
+		@Test
+		void testcase037() { // TC37: Birthdate = 0 Jan 1967, Pension Year-2021
+			PensionServiceIMP pc = new PensionServiceIMP();
+			ArrayList<String> test = new ArrayList<>();
+			test.add("0");
+			test.add("1");
+			test.add("1967");// tahunlahir
+			test.add("1");
+			test.add("7");
+			test.add("2000");// tahunkerja
+			test.add("3000");// gaji
+			test.add("110");// allowance
+			test.add("100");// gajicuti
+			test.add("0");// cutihari
+			test.add("0");// cutibulan
+			test.add("0");// cutitahun
+			test.add("1");// harisara
+			test.add("8");// bulansara
+			test.add("2010");// tahunsara
+			test.add("P");// jantina
+			test.add("N");// istimewa
+			ArrayList<String> output = pc.kirapencen(test);
+			String pensionYear = (output.get(7));
+			System.out.println("2021 = " + pensionYear.substring(5, 9));
+			assertEquals(pensionYear.substring(5, 9), "2021");
+			
+		}
+		@Test
+		void testcase038() { // TC38: Birthdate = 7 Sep 1967, Pension Year-2022
+			PensionServiceIMP pc = new PensionServiceIMP();
+			ArrayList<String> test = new ArrayList<>();
+			test.add("7");
+			test.add("11");
+			test.add("1967");// tahunlahir
+			test.add("1");
+			test.add("7");
+			test.add("2000");// tahunkerja
+			test.add("3000");// gaji
+			test.add("110");// allowance
+			test.add("100");// gajicuti
+			test.add("0");// cutihari
+			test.add("0");// cutibulan
+			test.add("0");// cutitahun
+			test.add("1");// harisara
+			test.add("8");// bulansara
+			test.add("2010");// tahunsara
+			test.add("P");// jantina
+			test.add("N");// istimewa
+			ArrayList<String> output = pc.kirapencen(test);
+			String pensionYear = (output.get(7));
+			System.out.println("2022 = " + pensionYear.substring(5, 9));
+			assertEquals(pensionYear.substring(5, 9), "2022");
+			
+		}
+		//Finish Tahun bayar
+}
